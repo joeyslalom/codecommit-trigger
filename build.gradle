@@ -1,0 +1,51 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.1.2'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    options.warnings = true
+    options.deprecation = true
+    options.compilerArgs += ["-Xlint:all", "-Werror"]
+}
+
+jar {
+    baseName = "codecommit-trigger"
+    version = '0.0.1-SNAPSHOT'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+    compile 'com.amazonaws:aws-lambda-java-events:1.1.0'
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlinVersion"
+}
+
+
+task buildZip(type: Zip) {
+    baseName = 'java4lambda'
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+}
+
+build.dependsOn buildZip
